@@ -1,0 +1,16 @@
+keys/
+.venv/
+.cache/
+.tools/
+.data/
+node_modules/
+__pycache__/
+*.pyc
+.pytest_cache/
+artifacts/
+contracts/compiled.json
+contracts/deployment.json
+.env
+
+# Local planning notes (implementation documentation is in docs/)
+mds/

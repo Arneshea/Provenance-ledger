@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Provenance / Artifact integrity lab</title><link rel="stylesheet" href="/style.css"></head>
+<body>
+<aside class="sidebar">
+  <a class="brand" href="/" aria-label="Provenance home"><span class="brand-mark">P<span>·</span></span><span>provenance<span class="brand-sub">ARTIFACT INTEGRITY LAB</span></span></a>
+  <div class="nav-label">WORKSPACE</div>
+  <nav aria-label="Main navigation">
+    <button class="nav active" data-tab="verify"><span>◈</span> Verify artifact <span class="nav-number">01</span></button>
+    <button class="nav" data-tab="lab"><span>⌁</span> Tampering lab <span class="nav-number">02</span></button>
+    <button class="nav" data-tab="merkle"><span>⋈</span> Merkle explorer <span class="nav-number">03</span></button>
+    <button class="nav" data-tab="ledger"><span>▤</span> Build ledger <span class="nav-number">04</span></button>
+  </nav>
+  <div class="sidebar-explainer"><span class="tiny-label">THE QUESTION WE ANSWER</span><p>Is this exactly what<br>the pipeline built?</p><div class="mini-flow">BUILD <span>→</span> RECORD <span>→</span> VERIFY</div></div>
+  <div class="connection"><div class="nav-label">LOCAL INFRASTRUCTURE <button id="refresh" aria-label="Refresh services">↻</button></div><div><span class="dot" id="chain-dot"></span> Ethereum / Ganache <small id="chain-state">Checking</small></div><div><span class="dot" id="ipfs-dot"></span> Storage / IPFS <small id="ipfs-state">Checking</small></div></div>
+  <div class="sidebar-foot">A small ledger. A clear chain of trust.<br><span>LOCAL DEMONSTRATION · v1.0</span></div>
+</aside>
+<main>
+  <header class="topbar"><span>Workspace <span class="slash">/</span> <strong id="breadcrumb">Verify artifact</strong></span><span class="environment"><span class="dot live"></span> LOCAL NETWORK <span class="network-id" id="chain-id">CHAIN —</span></span></header>
+  <div class="page">
+    <div class="heading"><div><div class="eyebrow">TRUST, WITH EVIDENCE</div><h1 id="page-title">Verify before you deploy<span>.</span></h1><p id="page-description">Follow an artifact from its registered origin to the bytes in your hands.</p></div><button class="button dark" id="sample-button"><span>＋</span> Create sample build</button></div>
+    <div id="notice" role="status" hidden></div>
+    <section class="view" id="view-verify">
+      <div class="workspace-grid">
+        <section class="panel input-panel"><div class="panel-heading"><span class="step-tag">01</span><h2>The artifact</h2><span class="quiet">INPUT</span></div>
+          <label class="dropzone" id="dropzone"><input id="artifact-file" type="file"><span class="upload-icon">↥</span><strong id="file-label">Drop your artifact here</strong><span id="file-description">or click to browse · any file up to 12 MiB</span><span class="file-chip">ZIP COMPARISON SUPPORTED</span></label>
+          <div class="field"><label for="build-select">Compare with a registered build <span>OPTIONAL</span></label><select id="build-select"><option value="">Look up by uploaded artifact hash</option></select><p>Select an approved build to catch a mismatch and inspect changed files.</p></div>
+          <button class="button primary full" id="verify-button">Verify artifact <span>↗</span></button>
+          <div class="input-actions"><button class="text-button" id="use-original">Use selected original</button><button class="text-button" id="register-button">Register uploaded artifact ↗</button></div>
+        </section>
+        <section class="panel verdict-panel" id="verdict-panel"><div class="panel-heading"><span class="step-tag">02</span><h2>The verdict</h2><span class="quiet">DEPLOY GATE</span></div><div id="verdict-content" class="verdict-empty"><span class="verdict-symbol">◎</span><h3>Every byte has a story.</h3><p>Choose an artifact or a registered original.<br>We’ll trace the evidence before allowing deployment.</p><div class="empty-checks"><span>SHA-256</span><span>MERKLE ROOT</span><span>SIGNATURE</span></div></div></section>
+      </div>
+      <section class="panel trace-panel"><div class="section-heading"><div><div class="eyebrow">THE CHAIN OF TRUST</div><h2>Five checks. One decision.</h2></div><span class="quiet">ALL CHECKS MUST PASS</span></div><div id="verification-flow" class="verification-flow"></div><div class="trace-note" id="trace-note">Nothing is assumed. The verifier independently checks the artifact, manifest, and pipeline identity.</div></section>
+      <section class="panel" id="comparison-panel" hidden><div class="section-heading"><div><div class="eyebrow">WHAT CHANGED</div><h2>Inside the artifact</h2></div><span class="quiet" id="byte-offset"></span></div><div id="comparison-content"></div></section>
+      <section class="panel" id="evidence-panel" hidden><div class="section-heading"><div><div class="eyebrow">INSPECT THE EVIDENCE</div><h2>Fingerprints & provenance</h2></div><button class="text-button" id="download-report">Download report ↓</button></div><div id="evidence-content"></div><details><summary>View the signed manifest</summary><pre id="manifest-content"></pre></details></section>
+    </section>
+    <section class="view" id="view-lab" hidden>
+      <div class="lab-banner"><span class="lab-icon">⌁</span><div><strong>Break the copy. Keep the proof.</strong><p>Controlled attacks against a registered build. Original artifacts and on-chain records stay intact.</p></div></div>
+      <section class="panel"><div class="section-heading"><div><div class="eyebrow">CHOOSE YOUR BASELINE</div><h2>Start with a trusted build</h2></div></div><select id="lab-build"><option value="">Select a locally available registered build</option></select></section>
+      <div class="attack-grid">
+        <button class="attack-card" data-attack="file"><span class="attack-top">01 <span>REAL COPY</span></span><span class="attack-icon">&lt;/&gt;</span><strong>Change a file</strong><p>Modify a file inside the ZIP after registration. Find the exact member that changed.</p><span class="attack-bottom">Caught by artifact hash <b>↗</b></span></button>
+        <button class="attack-card" data-attack="append"><span class="attack-top">02 <span>REAL COPY</span></span><span class="attack-icon">＋</span><strong>Append hidden bytes</strong><p>Add bytes to the ZIP container. The files may look identical, but its fingerprint changes.</p><span class="attack-bottom">Caught by artifact hash <b>↗</b></span></button>
+        <button class="attack-card" data-attack="manifest"><span class="attack-top">03 <span>SIMULATION</span></span><span class="attack-icon">{ }</span><strong>Edit the manifest</strong><p>Simulate a changed commit in the fetched manifest. Watch its Merkle root diverge.</p><span class="attack-bottom">Caught by Merkle root <b>↗</b></span></button>
+        <button class="attack-card" data-attack="signature"><span class="attack-top">04 <span>SIMULATION</span></span><span class="attack-icon">〰</span><strong>Forge the signature</strong><p>Simulate a signature from an unknown key. An unchanged root cannot hide a wrong signer.</p><span class="attack-bottom">Caught by signer identity <b>↗</b></span></button>
+      </div><div class="footnote">The lab shows what catches each attack, not who performed it or when. Manifest and signature simulations bypass IPFS retrieval to isolate the later checks; real retrieval would also enforce the recorded CID.</div>
+    </section>
+    <section class="view" id="view-merkle" hidden>
+      <div class="merkle-layout"><section class="panel"><div class="section-heading"><div><div class="eyebrow">ONE FIELD, ONE PROOF</div><h2>Choose a manifest entry</h2></div></div><label for="proof-build">Registered build</label><select id="proof-build"><option value="">Choose a build</option></select><div id="proof-entries" class="proof-entries"><p class="muted">Choose a build to explore its leaves.</p></div></section><section class="panel"><div class="section-heading"><div><div class="eyebrow">INCLUSION PATH</div><h2>From leaf to trusted root</h2></div></div><div id="proof-path" class="proof-path"><div class="proof-empty">◈<p>A few sibling hashes connect one field<br>to the root stored on-chain.</p></div></div></section></div>
+      <div class="footnote">Leaves use SHA-256(00 + canonical entry). Parents use SHA-256(01 + left bytes + right bytes). Odd last nodes are duplicated. This proof demonstrates inclusion, not that the software is safe.</div>
+    </section>
+    <section class="view" id="view-ledger" hidden><section class="panel"><div class="section-heading"><div><div class="eyebrow">APPEND-ONLY HISTORY</div><h2>Registered builds <span id="build-count" class="count">0</span></h2></div><button class="text-button" id="refresh-builds">Refresh ↻</button></div><div id="ledger-content" class="table-wrap"></div></section><div class="footnote">History is read from BuildRegistered contract events. Local originals enable file comparison; the on-chain root and CID remain the provenance anchors.</div></section>
+    <footer class="page-footer"><span>INTEGRITY IS CHECKABLE.</span><span>Python + Solidity + IPFS <span class="footer-dot">·</span> Built to be explained.</span></footer>
+  </div>
+</main>
+<dialog id="register-dialog"><form id="register-form"><div class="eyebrow">TRUSTED PIPELINE ACTION</div><h2>Register this artifact</h2><p>The local pipeline key will sign the manifest and send a registration transaction. The uploaded bytes are preserved exactly.</p><label for="commit-input">Full Git commit hash</label><input id="commit-input" required pattern="([0-9a-f]{40}|[0-9a-f]{64})" placeholder="40 or 64 lowercase hex characters"><label for="dependencies-input">Dependencies <span class="muted">optional JSON array</span></label><textarea id="dependencies-input" rows="3" placeholder='[{"name":"library","version":"1.0","hash":"…"}]'>[]</textarea><p class="muted">For a classroom sample, use “Create sample build” instead. It labels its commit as demo metadata.</p><div class="dialog-actions"><button class="button secondary" type="button" id="cancel-register">Cancel</button><button class="button primary" type="submit">Sign & register ↗</button></div></form></dialog>
+<script src="/app.js"></script>
+</body></html>
